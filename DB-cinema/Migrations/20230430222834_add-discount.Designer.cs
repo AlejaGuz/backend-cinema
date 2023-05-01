@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_cinema.Migrations
 {
     [DbContext(typeof(AlejaCinemaContext))]
-    [Migration("20230429081359_fixing-nullable-chair")]
-    partial class fixingnullablechair
+    [Migration("20230430222834_add-discount")]
+    partial class adddiscount
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,9 @@ namespace DB_cinema.Migrations
                     b.HasKey("ChairID");
 
                     b.HasIndex("LevelID");
+
+                    b.HasIndex(new[] { "Number", "Row" }, "Unique_NumberRow")
+                        .IsUnique();
 
                     b.ToTable("Aleja_Chairs", (string)null);
                 });
@@ -94,6 +97,31 @@ namespace DB_cinema.Migrations
                     b.ToTable("Aleja_Sales", (string)null);
                 });
 
+            modelBuilder.Entity("DB_cinema.Schedule", b =>
+                {
+                    b.Property<int>("ScheduleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScheduleID"));
+
+                    b.Property<double?>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDiscount")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Minutes")
+                        .HasColumnType("int");
+
+                    b.HasKey("ScheduleID");
+
+                    b.ToTable("Aleja_Schedule", (string)null);
+                });
+
             modelBuilder.Entity("DB_cinema.Showing", b =>
                 {
                     b.Property<int>("ShowID")
@@ -106,13 +134,15 @@ namespace DB_cinema.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("hour")
+                    b.Property<int>("ScheduleID")
                         .HasColumnType("int");
 
-                    b.Property<int>("minutes")
-                        .HasColumnType("int");
+                    b.Property<string>("UrlImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ShowID");
+
+                    b.HasIndex("ScheduleID");
 
                     b.ToTable("Aleja_Showings", (string)null);
                 });
@@ -167,6 +197,17 @@ namespace DB_cinema.Migrations
                     b.Navigation("Show");
                 });
 
+            modelBuilder.Entity("DB_cinema.Showing", b =>
+                {
+                    b.HasOne("DB_cinema.Schedule", "Schedule")
+                        .WithMany()
+                        .HasForeignKey("ScheduleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+                });
+
             modelBuilder.Entity("DB_cinema.Ticket", b =>
                 {
                     b.HasOne("DB_cinema.Chair", "Chair")
@@ -181,11 +222,13 @@ namespace DB_cinema.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DB_cinema.Sale", null)
+                    b.HasOne("DB_cinema.Sale", "Sale")
                         .WithMany("Tickets")
                         .HasForeignKey("SaleID");
 
                     b.Navigation("Chair");
+
+                    b.Navigation("Sale");
 
                     b.Navigation("Show");
                 });

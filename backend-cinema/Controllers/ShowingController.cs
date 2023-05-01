@@ -15,6 +15,7 @@ namespace backend_cinema.Controllers
         public ShowingController(IShowingService showingService)
         {
             _showingService= showingService;
+
         }
 
         [HttpGet]
@@ -98,6 +99,7 @@ namespace backend_cinema.Controllers
             }
 
         }
+
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using backend_cinema.Services.Interfaces;
 using DB_cinema;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Net.Sockets;
 
 namespace backend_cinema.Services
@@ -126,6 +127,73 @@ namespace backend_cinema.Services
                 _context.Entry(Chair).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return Chair;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<Chair> GetChairByRowColumnAsync(int Number, char Row)
+        {
+            try
+            {
+                var chair = await _context.Chairs
+                    .Where(c => c.Row==Row && c.Number== Number).FirstOrDefaultAsync();
+
+                return chair;
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        public async Task<Double> GetPriceByLeverAsync(int Level)
+        {
+            try
+            {
+                var level = await _context.Levels
+                    .Where(l => l.LevelID == Level).FirstOrDefaultAsync();
+
+                return level.Price;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<char>> GetTotalRowsAsync()
+        {
+            try
+            {
+                var rows = await _context.Chairs
+                    .Select(c => c.Row)
+                                  .Distinct()
+                                  .ToListAsync();
+
+                return rows;
+            }
+            catch
+            {
+                throw;
+            }
+            
+
+        }
+
+        public async Task<List<int>> GetTotalSeatsByRowAsync()
+        {
+            try
+            {
+                var chairsNum = await _context.Chairs
+                    .Select(c => c.Number)
+                                  .Distinct()
+                                  .ToListAsync();
+
+                return chairsNum;
             }
             catch
             {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DB_cinema.Migrations
 {
     /// <inheritdoc />
-    public partial class InitBD : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,18 +26,18 @@ namespace DB_cinema.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Aleja_Showings",
+                name: "Aleja_Schedule",
                 columns: table => new
                 {
-                    ShowID = table.Column<int>(type: "int", nullable: false)
+                    ScheduleID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MovieName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    hour = table.Column<int>(type: "int", nullable: false),
-                    minutes = table.Column<int>(type: "int", nullable: false)
+                    Hour = table.Column<int>(type: "int", nullable: false),
+                    Minutes = table.Column<int>(type: "int", nullable: false),
+                    Discount = table.Column<double>(type: "float", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Aleja_Showings", x => x.ShowID);
+                    table.PrimaryKey("PK_Aleja_Schedule", x => x.ScheduleID);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,6 +58,27 @@ namespace DB_cinema.Migrations
                         column: x => x.LevelID,
                         principalTable: "Aleja_Levels_Chair",
                         principalColumn: "LevelID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Aleja_Showings",
+                columns: table => new
+                {
+                    ShowID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MovieName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ScheduleID = table.Column<int>(type: "int", nullable: false),
+                    UrlImage = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Aleja_Showings", x => x.ShowID);
+                    table.ForeignKey(
+                        name: "FK_Aleja_Showings_Aleja_Schedule_ScheduleID",
+                        column: x => x.ScheduleID,
+                        principalTable: "Aleja_Schedule",
+                        principalColumn: "ScheduleID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -120,9 +141,20 @@ namespace DB_cinema.Migrations
                 column: "LevelID");
 
             migrationBuilder.CreateIndex(
+                name: "Unique_NumberRow",
+                table: "Aleja_Chairs",
+                columns: new[] { "Number", "Row" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Aleja_Sales_ShowingID",
                 table: "Aleja_Sales",
                 column: "ShowingID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Aleja_Showings_ScheduleID",
+                table: "Aleja_Showings",
+                column: "ScheduleID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Aleja_Tickets_IdChair",
@@ -157,6 +189,9 @@ namespace DB_cinema.Migrations
 
             migrationBuilder.DropTable(
                 name: "Aleja_Showings");
+
+            migrationBuilder.DropTable(
+                name: "Aleja_Schedule");
         }
     }
 }

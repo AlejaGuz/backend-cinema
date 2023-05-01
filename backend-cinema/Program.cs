@@ -23,18 +23,23 @@ builder.Services.AddTransient<IShowingService, ShowingService>();
 builder.Services.AddTransient<ITicketService, TicketService>();
 builder.Services.AddTransient<IChairService, ChairService>();
 builder.Services.AddTransient<ISaleService, SaleService>();
+builder.Services.AddTransient<IScheduleService, ScheduleService>();
+
+//Se configura CORS para que permita acceso desde cualquier dominio
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigins",
+    app =>
+    {
+        app.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
-/*
- * using(var scope = app.Services.CreateScope())
-{
-    // Traemos el contexto que creamos
-    var context = scope.ServiceProvider.GetRequiredService<AlejaCinemaContext>();
-    // Hacemos la migracion hacia la base de datos
-    context.Database.Migrate();
-}
- */
+app.UseCors("AllowAnyOrigins");
 
 
 // Configure the HTTP request pipeline.

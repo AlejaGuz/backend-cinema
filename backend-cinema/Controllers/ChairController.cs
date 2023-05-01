@@ -114,5 +114,82 @@ namespace backend_cinema.Controllers
             }
 
         }
+
+        [HttpGet("row/{Number:int}/column/{Row}")]
+        public async Task<ActionResult<Chair>> GetChairByRowColumnAsyn(int Number, char Row)
+        {
+            try
+            {
+                Console.WriteLine("number: " + Number+ " row: "+ Row);
+                var chair = await _chairService.GetChairByRowColumnAsync(Number, Row);
+                return Ok(chair);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpGet("level/{Level:int}")]
+        public async Task<ActionResult<Double>> GetPriceByLeverAsync(int Level)
+        {
+            try
+            {
+                var price = await _chairService.GetPriceByLeverAsync(Level);
+
+                return Ok(price);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("busy/{ShowID:int}")]
+        public async Task<ActionResult<List<Chair>>> GetOcuppiedChairsByShowAsync(int ShowID)
+        {
+            try
+            {
+                var chairs = await _chairService.GetOcuppiedChairsByShowAsync(ShowID);
+                return Ok(chairs);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet ("rows")]
+        public async Task<ActionResult<List<char>>> GetTotalRowsAsync()
+        {
+            try
+            {
+                var rows = await _chairService.GetTotalRowsAsync();
+                return Ok(rows);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("numbers")]
+        public async Task<ActionResult<List<int>>> GetTotalSeatsByRowAsync()
+        {
+            try
+            {
+                var numbers = await _chairService.GetTotalSeatsByRowAsync();
+                return Ok(numbers);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

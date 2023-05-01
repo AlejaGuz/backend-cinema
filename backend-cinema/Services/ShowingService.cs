@@ -84,5 +84,6 @@ namespace backend_cinema.Services
                 throw;
             }
         }
+
     }
 }
